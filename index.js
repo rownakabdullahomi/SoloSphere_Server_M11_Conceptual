@@ -26,6 +26,7 @@ async function run() {
   try {
     const db = client.db('solo-db')
     const jobsCollection = db.collection('jobs')
+    const bidsCollection = db.collection('bids')
 
     // save a jobData in db
     app.post('/add-job', async (req, res) => {
@@ -76,6 +77,18 @@ async function run() {
       const options = { upsert: true }
       const result = await jobsCollection.updateOne(query, updated, options)
       console.log(result)
+      res.send(result)
+    })
+
+     // save a bid Data in db
+     app.post('/add-bid', async (req, res) => {
+      // Save data in bids collection
+      const bidData = req.body
+      const result = await bidsCollection.insertOne(bidData)
+
+      // Increase the bid count in jobs collection
+      const updateBidCount = await jobsCollection.updateOne()
+
       res.send(result)
     })
 
